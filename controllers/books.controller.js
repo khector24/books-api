@@ -18,15 +18,7 @@ async function getBooks(req, res, next) {
 
 async function getBookById(req, res, next) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid book ID",
-      });
-    }
-
-    const book = await getSpecificBook(id);
+    const book = await getSpecificBook(req.bookId);
 
     if (!book) {
       return res.status(404).json({
@@ -44,12 +36,6 @@ async function createBook(req, res, next) {
   try {
     const { title, author } = req.body;
 
-    if (!title || !author) {
-      return res.status(400).json({
-        message: "Title and author are required",
-      });
-    }
-
     const newBook = await createBookService(title, author);
 
     return res.status(201).json({
@@ -63,17 +49,9 @@ async function createBook(req, res, next) {
 
 async function updateBook(req, res, next) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid book ID",
-      });
-    }
-
     const { title, author } = req.body;
 
-    const updatedBook = await updateBookService(id, title, author);
+    const updatedBook = await updateBookService(req.bookId, title, author);
 
     if (!updatedBook) {
       return res.status(404).json({
@@ -92,15 +70,7 @@ async function updateBook(req, res, next) {
 
 async function deleteBook(req, res, next) {
   try {
-    const id = Number(req.params.id);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({
-        message: "Invalid book ID",
-      });
-    }
-
-    const deletedBook = await deleteBookService(id);
+    const deletedBook = await deleteBookService(req.bookId);
 
     if (!deletedBook) {
       return res.status(404).json({
