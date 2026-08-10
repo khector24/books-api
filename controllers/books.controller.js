@@ -1,5 +1,5 @@
 import {
-  getAllBooks,
+  getBooksService,
   getSpecificBook,
   createBookService,
   updateBookService,
@@ -8,8 +8,9 @@ import {
 
 async function getBooks(req, res, next) {
   try {
-    const books = await getAllBooks();
+    const { author, title } = req.query;
 
+    const books = await getBooksService(author, title);
     return res.json(books);
   } catch (error) {
     next(error);

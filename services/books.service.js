@@ -1,7 +1,33 @@
 import { pool } from "../db/index.js";
 
-async function getAllBooks() {
-  const result = await pool.query("SELECT * FROM books");
+async function getBooksService(author, title) {
+  if (!author && !title) {
+    const result = await pool.query("SELECT * FROM books");
+    return result.rows;
+  }
+
+  if (!title) {
+    const result = await pool.query(
+      "SELECT * FROM books WHERE author ILIKE $1;",
+      [`%${author}%`],
+    );
+
+    return result.rows;
+  }
+
+  if (!author) {
+    const result = await pool.query(
+      "SELECT * FROM books WHERE title ILIKE $1;",
+      [`%${title}%`],
+    );
+
+    return result.rows;
+  }
+
+  const result = await pool.query(
+    "SELECT * FROM books WHERE title ILIKE $1 AND author ILIKE $2;",
+    [`%${title}%`, `%${author}%`],
+  );
 
   return result.rows;
 }
@@ -40,7 +66,7 @@ async function deleteBookService(id) {
 }
 
 export {
-  getAllBooks,
+  getBooksService,
   getSpecificBook,
   createBookService,
   updateBookService,
