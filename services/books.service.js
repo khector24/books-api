@@ -2,6 +2,8 @@ import { pool } from "../db/index.js";
 
 async function getBooksService(author, title, sort, order, page, limit) {
   let query = "SELECT * FROM books";
+  let countQuery = "SELECT COUNT(*) FROM books";
+
   const values = [];
   const conditions = [];
   const allowedSortFields = ["id", "title", "author"];
@@ -19,7 +21,10 @@ async function getBooksService(author, title, sort, order, page, limit) {
   }
 
   if (conditions.length > 0) {
-    query += ` WHERE ${conditions.join(" AND ")}`;
+    const whereClause = ` WHERE ${conditions.join(" AND ")}`;
+
+    query += whereClause;
+    countQuery += whereClause;
   }
 
   if (allowedSortFields.includes(sort)) {
@@ -30,20 +35,32 @@ async function getBooksService(author, title, sort, order, page, limit) {
     }
   }
 
-  if (page && limit) {
-    const pageNumber = Number(page);
-    const limitNumber = Number(limit);
-    const offset = (pageNumber - 1) * limitNumber;
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+  const offset = (pageNumber - 1) * limitNumber;
 
-    values.push(limitNumber);
-    query += ` LIMIT $${values.length}`;
+  // Run count before adding LIMIT/OFFSET values
+  const countResult = await pool.query(countQuery, values);
 
-    values.push(offset);
-    query += ` OFFSET $${values.length}`;
-  }
+  const totalBooks = Number(countResult.rows[0].count);
+  const totalPages = Math.ceil(totalBooks / limitNumber);
+
+  values.push(limitNumber);
+  query += ` LIMIT $${values.length}`;
+
+  values.push(offset);
+  query += ` OFFSET $${values.length}`;
 
   const result = await pool.query(query, values);
-  return result.rows;
+  return {
+    books: result.rows,
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      totalBooks,
+      totalPages,
+    },
+  };
 }
 
 async function getSpecificBook(id) {

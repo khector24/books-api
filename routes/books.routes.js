@@ -8,13 +8,14 @@ import {
 } from "../controllers/books.controller.js";
 import {
   validateBookId,
+  validateBookQuery,
   validateCreateBook,
   validateUpdateBook,
 } from "../middleware/books.validation.js";
 
 const booksRouter = express.Router();
 
-booksRouter.get("/", getBooks);
+booksRouter.get("/", validateBookQuery, getBooks);
 booksRouter.get("/:id", validateBookId, getBookById);
 booksRouter.post("/", validateCreateBook, createBook);
 booksRouter.patch("/:id", validateBookId, validateUpdateBook, updateBook);
