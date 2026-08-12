@@ -1,34 +1,48 @@
 import { pool } from "../db/index.js";
 
-async function getBooksService(author, title) {
-  if (!author && !title) {
-    const result = await pool.query("SELECT * FROM books");
-    return result.rows;
+async function getBooksService(author, title, sort, order, page, limit) {
+  let query = "SELECT * FROM books";
+  const values = [];
+  const conditions = [];
+  const allowedSortFields = ["id", "title", "author"];
+  const allowedSortOrders = ["ASC", "DESC"];
+  const upperCaseOrder = order?.toUpperCase();
+
+  if (title) {
+    values.push(`%${title}%`);
+    conditions.push(` title ILIKE $${values.length}`);
   }
 
-  if (!title) {
-    const result = await pool.query(
-      "SELECT * FROM books WHERE author ILIKE $1;",
-      [`%${author}%`],
-    );
-
-    return result.rows;
+  if (author) {
+    values.push(`%${author}%`);
+    conditions.push(` author ILIKE $${values.length}`);
   }
 
-  if (!author) {
-    const result = await pool.query(
-      "SELECT * FROM books WHERE title ILIKE $1;",
-      [`%${title}%`],
-    );
-
-    return result.rows;
+  if (conditions.length > 0) {
+    query += ` WHERE ${conditions.join(" AND ")}`;
   }
 
-  const result = await pool.query(
-    "SELECT * FROM books WHERE title ILIKE $1 AND author ILIKE $2;",
-    [`%${title}%`, `%${author}%`],
-  );
+  if (allowedSortFields.includes(sort)) {
+    query += ` ORDER BY ${sort}`;
 
+    if (allowedSortOrders.includes(upperCaseOrder)) {
+      query += ` ${upperCaseOrder}`;
+    }
+  }
+
+  if (page && limit) {
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const offset = (pageNumber - 1) * limitNumber;
+
+    values.push(limitNumber);
+    query += ` LIMIT $${values.length}`;
+
+    values.push(offset);
+    query += ` OFFSET $${values.length}`;
+  }
+
+  const result = await pool.query(query, values);
   return result.rows;
 }
 

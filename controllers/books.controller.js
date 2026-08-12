@@ -8,9 +8,16 @@ import {
 
 async function getBooks(req, res, next) {
   try {
-    const { author, title } = req.query;
+    const { author, title, sort, order, page, limit } = req.query;
 
-    const books = await getBooksService(author, title);
+    const books = await getBooksService(
+      author,
+      title,
+      sort,
+      order,
+      page,
+      limit,
+    );
     return res.json(books);
   } catch (error) {
     next(error);
