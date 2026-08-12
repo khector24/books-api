@@ -5,6 +5,10 @@ import {
 
 async function getBookReviews(req, res, next) {
   try {
+    const book_id = req.bookId;
+    const bookReviews = await getBookReviewService(book_id);
+
+    return res.json(bookReviews);
   } catch (error) {
     next(error);
   }
