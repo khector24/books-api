@@ -1,5 +1,6 @@
 import express from "express";
 import { booksRouter } from "./routes/books.routes.js";
+import { reviewsRouter } from "./routes/reviews.routes.js";
 
 const app = express();
 const port = 3000;
@@ -8,11 +9,16 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// API routes
+// api routes
 app.get("/", (req, res) => {
   res.send("Welcome to this beautiful landing page!");
 });
+
+// book routes
 app.use("/api/books", booksRouter);
+
+// review routes
+app.use("/api/books", reviewsRouter);
 
 // Error Middleware
 app.use((error, req, res, next) => {
