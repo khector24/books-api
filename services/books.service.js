@@ -51,6 +51,9 @@ async function getBooksService(author, title, sort, order, page, limit) {
   values.push(offset);
   query += ` OFFSET $${values.length}`;
 
+  const hasNextPage = pageNumber < totalPages;
+  const hasPreviousPage = pageNumber > 1;
+
   const result = await pool.query(query, values);
   return {
     books: result.rows,
@@ -59,6 +62,8 @@ async function getBooksService(author, title, sort, order, page, limit) {
       limit: limitNumber,
       totalBooks,
       totalPages,
+      hasNextPage,
+      hasPreviousPage,
     },
   };
 }
