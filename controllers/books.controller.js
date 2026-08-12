@@ -8,7 +8,14 @@ import {
 
 async function getBooks(req, res, next) {
   try {
-    const { author, title, sort, order, page = "1", limit = "5" } = req.query;
+    const {
+      author,
+      title,
+      sort = "id",
+      order = "ASC",
+      page = "1",
+      limit = "5",
+    } = req.query;
 
     const books = await getBooksService(
       author,
