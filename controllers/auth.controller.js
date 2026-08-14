@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import {
   createUserService,
   loginUserService,
@@ -40,9 +41,24 @@ async function login(req, res, next) {
       });
     }
 
+    const secret = process.env.JWT_SECRET;
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        username: user.username,
+        role: user.role,
+      },
+      secret,
+      {
+        expiresIn: "7d",
+      },
+    );
+
     return res.json({
       message: `Welcome ${user.username}`,
       username: user.username,
+      token,
     });
   } catch (error) {
     next(error);

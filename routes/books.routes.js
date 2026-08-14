@@ -12,12 +12,22 @@ import {
   validateCreateBook,
   validateUpdateBook,
 } from "../middleware/books.validation.js";
+import {
+  authenticateToken,
+  requireAdmin,
+} from "../middleware/auth.middleware.js";
 
 const booksRouter = express.Router();
 
 booksRouter.get("/", validateBookQuery, getBooks);
 booksRouter.get("/:id", validateBookId, getBookById);
-booksRouter.post("/", validateCreateBook, createBook);
+booksRouter.post(
+  "/",
+  authenticateToken,
+  requireAdmin,
+  validateCreateBook,
+  createBook,
+);
 booksRouter.patch("/:id", validateBookId, validateUpdateBook, updateBook);
 booksRouter.delete("/:id", validateBookId, deleteBook);
 

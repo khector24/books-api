@@ -49,6 +49,7 @@ async function getBookById(req, res, next) {
 
 async function createBook(req, res, next) {
   try {
+    console.log(req.user);
     const { title, author } = req.body;
 
     const newBook = await createBookService(title, author);
