@@ -22,7 +22,7 @@ app.use("/api/books", booksRouter);
 app.use("/api", reviewsRouter);
 
 // auth routes
-app.use("/api/auth", authRouter);
+app.use("/api", authRouter);
 
 // Error Middleware
 app.use((error, req, res, next) => {

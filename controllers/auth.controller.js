@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import {
   createUserService,
   loginUserService,
+  updateUserRoleService,
 } from "../services/auth.service.js";
 
 async function register(req, res, next) {
@@ -65,4 +66,23 @@ async function login(req, res, next) {
   }
 }
 
-export { register, login };
+async function updateUserRole(req, res, next) {
+  try {
+    const updatedUser = await updateUserRoleService(req.userRole, req.userId);
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.json({
+      message: `User updated successfully!`,
+      updatedUser,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { register, login, updateUserRole };

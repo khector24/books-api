@@ -19,4 +19,16 @@ async function loginUserService(email) {
   return result.rows[0];
 }
 
-export { createUserService, loginUserService };
+async function updateUserRoleService(role, userId) {
+  const result = await pool.query(
+    `UPDATE users
+      SET role = $1
+      WHERE id = $2
+      RETURNING id, username, email, role;`,
+    [role, userId],
+  );
+
+  return result.rows[0];
+}
+
+export { createUserService, loginUserService, updateUserRoleService };

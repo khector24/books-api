@@ -22,4 +22,34 @@ function validateLogin(req, res, next) {
   next();
 }
 
-export { validateRegister, validateLogin };
+function validateUserId(req, res, next) {
+  const userId = Number(req.params.userId);
+
+  if (!Number.isInteger(userId) || userId < 1) {
+    return res.status(400).json({
+      message: "Invalid user ID",
+    });
+  }
+
+  req.userId = userId;
+
+  next();
+}
+
+function validateUserRole(req, res, next) {
+  const allowedRoles = ["user", "admin"];
+
+  const { role } = req.body;
+
+  if (role === undefined || !allowedRoles.includes(role)) {
+    return res.status(400).json({
+      message: "User role required or is not valid.",
+    });
+  }
+
+  req.userRole = role;
+
+  next();
+}
+
+export { validateRegister, validateLogin, validateUserId, validateUserRole };
