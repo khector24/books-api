@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { getReviewByIdService } from "../services/reviews.service.js";
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
@@ -34,4 +35,28 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-export { authenticateToken, requireAdmin };
+async function authorizeReviewOwner(req, res, next) {
+  try {
+    const review = await getReviewByIdService(req.reviewId);
+
+    if (!review) {
+      return res.status(404).json({
+        message: "Review not found",
+      });
+    }
+
+    if (req.user.id !== review.user_id) {
+      return res.status(403).json({
+        message: "You do not have permission to modify this review",
+      });
+    }
+
+    req.review = review;
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
+export { authenticateToken, requireAdmin, authorizeReviewOwner };

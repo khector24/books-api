@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 app.use("/api/books", booksRouter);
 
 // review routes
-app.use("/api/books", reviewsRouter);
+app.use("/api", reviewsRouter);
 
 // auth routes
 app.use("/api/auth", authRouter);
