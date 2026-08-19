@@ -5,6 +5,7 @@ import {
   loginUserService,
   updateUserRoleService,
 } from "../services/auth.service.js";
+import { AppError } from "../utils/AppError.js";
 
 async function register(req, res, next) {
   try {
@@ -29,17 +30,13 @@ async function login(req, res, next) {
     const user = await loginUserService(email);
 
     if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
+      throw new AppError("Invalid email or password", 401);
     }
 
     const passwordMatches = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordMatches) {
-      return res.status(401).json({
-        message: "Invalid email or password",
-      });
+      throw new AppError("Invalid email or password", 401);
     }
 
     const secret = process.env.JWT_SECRET;
@@ -71,9 +68,7 @@ async function updateUserRole(req, res, next) {
     const updatedUser = await updateUserRoleService(req.userRole, req.userId);
 
     if (!updatedUser) {
-      return res.status(404).json({
-        message: "User not found",
-      });
+      throw new AppError("User not found", 404);
     }
 
     return res.json({

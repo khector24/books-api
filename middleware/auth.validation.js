@@ -1,10 +1,10 @@
+import { AppError } from "../utils/AppError.js";
+
 function validateRegister(req, res, next) {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
-    return res.status(400).json({
-      message: "Username, email, and password are required",
-    });
+    throw new AppError("Username, email, and password are required", 400);
   }
 
   next();
@@ -14,9 +14,7 @@ function validateLogin(req, res, next) {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({
-      message: "Email and password are required",
-    });
+    throw new AppError("Email and password are required", 400);
   }
 
   next();
@@ -26,9 +24,7 @@ function validateUserId(req, res, next) {
   const userId = Number(req.params.userId);
 
   if (!Number.isInteger(userId) || userId < 1) {
-    return res.status(400).json({
-      message: "Invalid user ID",
-    });
+    throw new AppError("Invalid user ID", 400);
   }
 
   req.userId = userId;
@@ -42,9 +38,7 @@ function validateUserRole(req, res, next) {
   const { role } = req.body;
 
   if (role === undefined || !allowedRoles.includes(role)) {
-    return res.status(400).json({
-      message: "User role required or is not valid.",
-    });
+    throw new AppError("User role required or is not valid.", 400);
   }
 
   req.userRole = role;

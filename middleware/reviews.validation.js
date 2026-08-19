@@ -1,10 +1,10 @@
+import { AppError } from "../utils/AppError.js";
+
 function validateCreateReviewFields(req, res, next) {
   const { rating, review } = req.body;
 
   if (rating === undefined || !review) {
-    return res.status(400).json({
-      message: "Rating and review are required",
-    });
+    throw new AppError("Rating and review are required", 400);
   }
 
   next();
@@ -20,9 +20,7 @@ function validateRating(req, res, next) {
   const ratingNumber = Number(rating);
 
   if (!Number.isInteger(ratingNumber) || ratingNumber < 1 || ratingNumber > 5) {
-    return res.status(400).json({
-      message: "Rating must be an integer between 1 and 5",
-    });
+    throw new AppError("Rating must be an integer between 1 and 5", 400);
   }
 
   req.body.rating = ratingNumber;
@@ -34,9 +32,7 @@ function validateReviewId(req, res, next) {
   const reviewId = Number(req.params.reviewId);
 
   if (!Number.isInteger(reviewId) || reviewId < 1) {
-    return res.status(400).json({
-      message: "Invalid review ID",
-    });
+    throw new AppError("Invalid review ID", 400);
   }
 
   req.reviewId = reviewId;
@@ -48,9 +44,7 @@ function validateUpdateReview(req, res, next) {
   const { rating, review } = req.body;
 
   if (rating === undefined && review === undefined) {
-    return res.status(400).json({
-      message: "Rating or review is required",
-    });
+    throw new AppError("Rating or review is required", 400);
   }
 
   next();

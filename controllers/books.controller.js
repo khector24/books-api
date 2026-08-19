@@ -5,6 +5,7 @@ import {
   updateBookService,
   deleteBookService,
 } from "../services/books.service.js";
+import { AppError } from "../utils/AppError.js";
 
 async function getBooks(req, res, next) {
   try {
@@ -36,9 +37,7 @@ async function getBookById(req, res, next) {
     const book = await getSpecificBook(req.bookId);
 
     if (!book) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      throw new AppError("Book not found", 404);
     }
 
     return res.json(book);
@@ -70,12 +69,10 @@ async function updateBook(req, res, next) {
     const updatedBook = await updateBookService(req.bookId, title, author);
 
     if (!updatedBook) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      throw new AppError("Book not found", 404);
     }
 
-    return res.status(200).json({
+    return res.json({
       message: "Book updated successfully",
       updatedBook,
     });
@@ -89,11 +86,12 @@ async function deleteBook(req, res, next) {
     const deletedBook = await deleteBookService(req.bookId);
 
     if (!deletedBook) {
-      return res.status(404).json({
-        message: "Book not found",
-      });
+      throw new AppError("Book not found", 404);
     }
 
+    // Or return status code 204 - for no content but since
+    // you're returning something it's fine.
+    // "the request succeeded, but the server is returning no response body."
     return res.status(200).json({
       message: "Book Deleted Successfully",
       deletedBook,

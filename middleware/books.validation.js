@@ -1,10 +1,10 @@
+import { AppError } from "../utils/AppError.js";
+
 function validateBookId(req, res, next) {
   const id = Number(req.params.id);
 
   if (Number.isNaN(id)) {
-    return res.status(400).json({
-      message: "Invalid book ID",
-    });
+    throw new AppError("Invalid book ID", 400);
   }
 
   req.bookId = id;
@@ -19,30 +19,22 @@ function validateBookQuery(req, res, next) {
   const allowedSortOrders = ["ASC", "DESC"];
 
   if (sort !== undefined && !allowedSortFields.includes(sort)) {
-    return res.status(400).json({
-      message: "Sort must be one of: id, title, author",
-    });
+    throw new AppError("Sort must be one of: id, title, author", 400);
   }
 
   if (order !== undefined && sort === undefined) {
-    return res.status(400).json({
-      message: "Sort is required when order is provided",
-    });
+    throw new AppError("Sort is required when order is provided", 400);
   }
 
   if (order !== undefined && !allowedSortOrders.includes(order.toUpperCase())) {
-    return res.status(400).json({
-      message: "Order must be either: ASC, DESC",
-    });
+    throw new AppError("Order must be either: ASC, DESC", 400);
   }
 
   if (page !== undefined) {
     const pageNumber = Number(page);
 
     if (!Number.isInteger(pageNumber) || pageNumber < 1) {
-      return res.status(400).json({
-        message: "Page must be a positive integer",
-      });
+      throw new AppError("Page must be a positive integer", 400);
     }
   }
 
@@ -54,9 +46,7 @@ function validateBookQuery(req, res, next) {
       limitNumber < 1 ||
       limitNumber > 100
     ) {
-      return res.status(400).json({
-        message: "Limit must be an integer between 1 and 100",
-      });
+      throw new AppError("Limit must be an integer between 1 and 100", 400);
     }
   }
 
@@ -67,9 +57,7 @@ function validateCreateBook(req, res, next) {
   const { title, author } = req.body;
 
   if (!title || !author) {
-    return res.status(400).json({
-      message: "Title and author are required",
-    });
+    throw new AppError("Title and author are required", 400);
   }
 
   next();
@@ -79,9 +67,7 @@ function validateUpdateBook(req, res, next) {
   const { title, author } = req.body;
 
   if (!title && !author) {
-    return res.status(400).json({
-      message: "Title or author is required",
-    });
+    throw new AppError("Title or author is required", 400);
   }
 
   next();

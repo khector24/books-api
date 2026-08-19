@@ -2,6 +2,7 @@ import express from "express";
 import { booksRouter } from "./routes/books.routes.js";
 import { reviewsRouter } from "./routes/reviews.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 const port = 3000;
@@ -25,19 +26,7 @@ app.use("/api", reviewsRouter);
 app.use("/api", authRouter);
 
 // Error Middleware
-app.use((error, req, res, next) => {
-  console.error(error);
-
-  if (error.code === "23505") {
-    return res.status(409).json({
-      message: "Username or email already exists",
-    });
-  }
-
-  return res.status(500).json({
-    message: "Internal Server Error",
-  });
-});
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
