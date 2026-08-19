@@ -30,7 +30,7 @@ async function createBookReview(req, res, next) {
     );
 
     return res.status(201).json({
-      message: "Review Created",
+      message: "Review created",
       data: newReview,
     });
   } catch (error) {
@@ -49,7 +49,7 @@ async function updateReview(req, res, next) {
     );
 
     return res.json({
-      message: "Review Updated",
+      message: "Review updated",
       data: updatedReview,
     });
   } catch (error) {
@@ -62,7 +62,7 @@ async function deleteReview(req, res, next) {
     const deletedReview = await deleteReviewService(req.reviewId);
 
     return res.json({
-      message: "Review Deleted Successfully",
+      message: "Review deleted successfully",
       data: deletedReview,
     });
   } catch (error) {
