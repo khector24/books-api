@@ -1,31 +1,31 @@
 import { pool } from "../db/index.js";
 
-async function getBookReviewService(book_id) {
+async function getBookReviewsService(bookId) {
   const result = await pool.query(
     `SELECT books.title, reviews.rating, reviews.review 
      FROM books 
      INNER JOIN reviews ON books.id = reviews.book_id 
      WHERE books.id = $1;`,
-    [book_id],
+    [bookId],
   );
 
   return result.rows;
 }
 
-async function getReviewByIdService(review_id) {
+async function getReviewByIdService(reviewId) {
   const result = await pool.query("SELECT * FROM reviews WHERE id = $1;", [
-    review_id,
+    reviewId,
   ]);
 
   return result.rows[0];
 }
 
-async function createBookReviewService(book_id, user_id, rating, review) {
+async function createBookReviewService(bookId, userId, rating, review) {
   const result = await pool.query(
     `INSERT INTO reviews (book_id, user_id, rating, review)
      VALUES ($1, $2, $3, $4)
      RETURNING *;`,
-    [book_id, user_id, rating, review],
+    [bookId, userId, rating, review],
   );
 
   return result.rows[0];
@@ -56,7 +56,7 @@ async function deleteReviewService(reviewId) {
 }
 
 export {
-  getBookReviewService,
+  getBookReviewsService,
   getReviewByIdService,
   createBookReviewService,
   updateReviewService,

@@ -18,7 +18,7 @@ async function getBooks(req, res, next) {
       limit = 5,
     } = req.validatedQuery;
 
-    const books = await getBooksService(
+    const { books, pagination } = await getBooksService(
       author,
       title,
       sort,
@@ -26,7 +26,11 @@ async function getBooks(req, res, next) {
       page,
       limit,
     );
-    return res.json(books);
+
+    return res.json({
+      data: books,
+      pagination,
+    });
   } catch (error) {
     next(error);
   }
@@ -40,7 +44,9 @@ async function getBookById(req, res, next) {
       throw new AppError("Book not found", 404);
     }
 
-    return res.json(book);
+    return res.json({
+      data: book,
+    });
   } catch (error) {
     next(error);
   }
@@ -48,14 +54,13 @@ async function getBookById(req, res, next) {
 
 async function createBook(req, res, next) {
   try {
-    console.log(req.user);
     const { title, author } = req.body;
 
     const newBook = await createBookService(title, author);
 
     return res.status(201).json({
-      newBook,
-      message: "Book Created",
+      message: "Book created successfully",
+      data: newBook,
     });
   } catch (error) {
     next(error);
@@ -74,7 +79,7 @@ async function updateBook(req, res, next) {
 
     return res.json({
       message: "Book updated successfully",
-      updatedBook,
+      data: updatedBook,
     });
   } catch (error) {
     next(error);
@@ -92,9 +97,9 @@ async function deleteBook(req, res, next) {
     // Or return status code 204 - for no content but since
     // you're returning something it's fine.
     // "the request succeeded, but the server is returning no response body."
-    return res.status(200).json({
-      message: "Book Deleted Successfully",
-      deletedBook,
+    return res.json({
+      message: "Book deleted successfully",
+      data: deletedBook,
     });
   } catch (error) {
     next(error);

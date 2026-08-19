@@ -16,7 +16,7 @@ async function register(req, res, next) {
 
     return res.status(201).json({
       message: "User created",
-      user,
+      data: user,
     });
   } catch (error) {
     next(error);
@@ -55,8 +55,10 @@ async function login(req, res, next) {
 
     return res.json({
       message: `Welcome ${user.username}`,
-      username: user.username,
-      token,
+      data: {
+        username: user.username,
+        token,
+      },
     });
   } catch (error) {
     next(error);
@@ -72,8 +74,8 @@ async function updateUserRole(req, res, next) {
     }
 
     return res.json({
-      message: `User updated successfully!`,
-      updatedUser,
+      message: `User updated successfully`,
+      data: updatedUser,
     });
   } catch (error) {
     next(error);
