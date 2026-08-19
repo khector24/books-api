@@ -14,9 +14,9 @@ async function getBooks(req, res, next) {
       title,
       sort = "id",
       order = "ASC",
-      page = "1",
-      limit = "5",
-    } = req.query;
+      page = 1,
+      limit = 5,
+    } = req.validatedQuery;
 
     const books = await getBooksService(
       author,

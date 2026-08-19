@@ -1,74 +1,69 @@
 import { AppError } from "../utils/AppError.js";
+import Joi from "joi";
+
+const bookIdSchema = Joi.number().integer().min(1).required();
+
+const createBookSchema = Joi.object({
+  title: Joi.string().required(),
+  author: Joi.string().required(),
+});
+
+const updateBookSchema = Joi.object({
+  title: Joi.string(),
+  author: Joi.string(),
+}).or("title", "author");
+
+const bookQuerySchema = Joi.object({
+  sort: Joi.string().valid("id", "title", "author"),
+  order: Joi.string().valid("ASC", "DESC"),
+  page: Joi.number().integer().min(1),
+  limit: Joi.number().integer().min(1).max(100),
+}).with("order", "sort");
 
 function validateBookId(req, res, next) {
-  const id = Number(req.params.id);
+  const { error, value } = bookIdSchema.validate(req.params.id);
 
-  if (Number.isNaN(id)) {
-    throw new AppError("Invalid book ID", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  req.bookId = id;
+  req.bookId = value;
 
   next();
 }
 
 function validateBookQuery(req, res, next) {
-  const { sort, order, page, limit } = req.query;
+  const { error, value } = bookQuerySchema.validate(req.query);
 
-  const allowedSortFields = ["id", "title", "author"];
-  const allowedSortOrders = ["ASC", "DESC"];
-
-  if (sort !== undefined && !allowedSortFields.includes(sort)) {
-    throw new AppError("Sort must be one of: id, title, author", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  if (order !== undefined && sort === undefined) {
-    throw new AppError("Sort is required when order is provided", 400);
-  }
-
-  if (order !== undefined && !allowedSortOrders.includes(order.toUpperCase())) {
-    throw new AppError("Order must be either: ASC, DESC", 400);
-  }
-
-  if (page !== undefined) {
-    const pageNumber = Number(page);
-
-    if (!Number.isInteger(pageNumber) || pageNumber < 1) {
-      throw new AppError("Page must be a positive integer", 400);
-    }
-  }
-
-  if (limit !== undefined) {
-    const limitNumber = Number(limit);
-
-    if (
-      !Number.isInteger(limitNumber) ||
-      limitNumber < 1 ||
-      limitNumber > 100
-    ) {
-      throw new AppError("Limit must be an integer between 1 and 100", 400);
-    }
-  }
+  req.validatedQuery = value;
 
   next();
 }
 
 function validateCreateBook(req, res, next) {
-  const { title, author } = req.body;
+  const { error, value } = createBookSchema.validate(req.body);
 
-  if (!title || !author) {
-    throw new AppError("Title and author are required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
+
+  req.body = value;
 
   next();
 }
 
 function validateUpdateBook(req, res, next) {
-  const { title, author } = req.body;
+  const { error, value } = updateBookSchema.validate(req.body);
 
-  if (!title && !author) {
-    throw new AppError("Title or author is required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
+
+  req.body = value;
 
   next();
 }

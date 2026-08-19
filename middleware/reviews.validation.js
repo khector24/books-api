@@ -1,58 +1,52 @@
+import Joi from "joi";
 import { AppError } from "../utils/AppError.js";
 
+const createReviewSchema = Joi.object({
+  rating: Joi.number().integer().min(1).max(5).required(),
+  review: Joi.string(),
+});
+
+const updateReviewSchema = Joi.object({
+  rating: Joi.number().integer().min(1).max(5),
+  review: Joi.string(),
+}).or("rating", "review");
+
+const reviewIdSchema = Joi.number().integer().min(1).required();
+
 function validateCreateReviewFields(req, res, next) {
-  const { rating, review } = req.body;
+  const { error, value } = createReviewSchema.validate(req.body);
 
-  if (rating === undefined || !review) {
-    throw new AppError("Rating and review are required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  next();
-}
-
-function validateRating(req, res, next) {
-  const { rating } = req.body;
-
-  if (rating === undefined) {
-    return next();
-  }
-
-  const ratingNumber = Number(rating);
-
-  if (!Number.isInteger(ratingNumber) || ratingNumber < 1 || ratingNumber > 5) {
-    throw new AppError("Rating must be an integer between 1 and 5", 400);
-  }
-
-  req.body.rating = ratingNumber;
+  req.body = value;
 
   next();
 }
 
 function validateReviewId(req, res, next) {
-  const reviewId = Number(req.params.reviewId);
+  const { error, value } = reviewIdSchema.validate(req.params.reviewId);
 
-  if (!Number.isInteger(reviewId) || reviewId < 1) {
-    throw new AppError("Invalid review ID", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  req.reviewId = reviewId;
+  req.reviewId = value;
 
   next();
 }
 
 function validateUpdateReview(req, res, next) {
-  const { rating, review } = req.body;
+  const { error, value } = updateReviewSchema.validate(req.body);
 
-  if (rating === undefined && review === undefined) {
-    throw new AppError("Rating or review is required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
+
+  req.body = value;
 
   next();
 }
 
-export {
-  validateCreateReviewFields,
-  validateRating,
-  validateReviewId,
-  validateUpdateReview,
-};
+export { validateCreateReviewFields, validateReviewId, validateUpdateReview };

@@ -1,47 +1,69 @@
 import { AppError } from "../utils/AppError.js";
+import Joi from "joi";
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});
+
+const registerSchema = Joi.object({
+  username: Joi.string().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});
+
+const userRoleSchema = Joi.object({
+  role: Joi.string().valid("user", "admin").required(),
+});
+
+const userIdSchema = Joi.object({
+  userId: Joi.number().integer().min(1).required(),
+});
 
 function validateRegister(req, res, next) {
-  const { username, email, password } = req.body;
+  const { error, value } = registerSchema.validate(req.body);
 
-  if (!username || !email || !password) {
-    throw new AppError("Username, email, and password are required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
+
+  req.body = value;
 
   next();
 }
 
 function validateLogin(req, res, next) {
-  const { email, password } = req.body;
+  const { error, value } = loginSchema.validate(req.body);
 
-  if (!email || !password) {
-    throw new AppError("Email and password are required", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
+
+  req.body = value;
 
   next();
 }
 
 function validateUserId(req, res, next) {
-  const userId = Number(req.params.userId);
+  const { error, value } = userIdSchema.validate(req.params);
 
-  if (!Number.isInteger(userId) || userId < 1) {
-    throw new AppError("Invalid user ID", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  req.userId = userId;
+  req.userId = value.userId;
 
   next();
 }
 
 function validateUserRole(req, res, next) {
-  const allowedRoles = ["user", "admin"];
+  const { error, value } = userRoleSchema.validate(req.body);
 
-  const { role } = req.body;
-
-  if (role === undefined || !allowedRoles.includes(role)) {
-    throw new AppError("User role required or is not valid.", 400);
+  if (error) {
+    throw new AppError(error.message, 400);
   }
 
-  req.userRole = role;
+  req.userRole = value.role;
 
   next();
 }

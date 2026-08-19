@@ -13,7 +13,6 @@ import {
 import { validateBookId } from "../middleware/books.validation.js";
 import {
   validateCreateReviewFields,
-  validateRating,
   validateReviewId,
   validateUpdateReview,
 } from "../middleware/reviews.validation.js";
@@ -26,7 +25,6 @@ reviewsRouter.post(
   authenticateToken,
   validateBookId,
   validateCreateReviewFields,
-  validateRating,
   createBookReview,
 );
 reviewsRouter.patch(
@@ -35,7 +33,6 @@ reviewsRouter.patch(
   validateReviewId,
   authorizeReviewOwner,
   validateUpdateReview,
-  validateRating,
   updateReview,
 );
 reviewsRouter.delete(
