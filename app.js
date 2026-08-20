@@ -5,7 +5,6 @@ import { authRouter } from "./routes/auth.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
-const port = 3000;
 
 // Global Middleware
 app.use(express.json());
@@ -28,6 +27,4 @@ app.use("/api", authRouter);
 // Error Middleware
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+export { app };
