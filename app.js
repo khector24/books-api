@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { booksRouter } from "./routes/books.routes.js";
 import { reviewsRouter } from "./routes/reviews.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
@@ -7,6 +8,11 @@ import { errorHandler } from "./middleware/error.middleware.js";
 const app = express();
 
 // Global Middleware
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  }),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
