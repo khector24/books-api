@@ -6,12 +6,17 @@ const bookIdSchema = Joi.number().integer().min(1).required();
 const createBookSchema = Joi.object({
   title: Joi.string().required(),
   author: Joi.string().required(),
+  published_year: Joi.number()
+    .integer()
+    .max(new Date().getFullYear())
+    .required(),
 });
 
 const updateBookSchema = Joi.object({
   title: Joi.string(),
   author: Joi.string(),
-}).or("title", "author");
+  published_year: Joi.number().integer().max(new Date().getFullYear()),
+}).min(1);
 
 const bookQuerySchema = Joi.object({
   sort: Joi.string().valid("id", "title", "author"),

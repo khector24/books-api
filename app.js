@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { booksRouter } from "./routes/books.routes.js";
 import { reviewsRouter } from "./routes/reviews.routes.js";
 import { authRouter } from "./routes/auth.routes.js";
@@ -8,9 +9,10 @@ import { errorHandler } from "./middleware/error.middleware.js";
 const app = express();
 
 // Global Middleware
+app.use(helmet());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_ORIGIN,
   }),
 );
 app.use(express.json());

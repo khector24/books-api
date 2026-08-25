@@ -64,12 +64,14 @@ describe("POST /api/books", () => {
       .send({
         title: "Test Book",
         author: "Test Author",
+        published_year: 2020,
       });
 
     expect(response.status).toBe(201);
     expect(response.body.message).toBe("Book created successfully");
     expect(response.body.data.title).toBe("Test Book");
     expect(response.body.data.author).toBe("Test Author");
+    expect(response.body.data.published_year).toBe(2020);
 
     const bookId = response.body.data.id;
 

@@ -4,6 +4,7 @@ import {
   updateReviewService,
   deleteReviewService,
 } from "../services/reviews.service.js";
+import { AppError } from "../utils/AppError.js";
 
 async function getBookReviews(req, res, next) {
   try {
@@ -48,6 +49,10 @@ async function updateReview(req, res, next) {
       req.reviewId,
     );
 
+    if (!updatedReview) {
+      throw new AppError("Review not found", 404);
+    }
+
     return res.json({
       message: "Review updated",
       data: updatedReview,
@@ -60,6 +65,10 @@ async function updateReview(req, res, next) {
 async function deleteReview(req, res, next) {
   try {
     const deletedReview = await deleteReviewService(req.reviewId);
+
+    if (!deletedReview) {
+      throw new AppError("Review not found", 404);
+    }
 
     return res.json({
       message: "Review deleted successfully",

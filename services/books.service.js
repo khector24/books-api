@@ -73,23 +73,28 @@ async function getSpecificBook(id) {
   return result.rows[0];
 }
 
-async function createBookService(title, author) {
+async function createBookService(title, author, published_year) {
   const result = await pool.query(
-    "INSERT INTO books (title, author) VALUES ($1, $2) RETURNING *;",
-    [title, author],
+    `INSERT INTO books (title, author, published_year)
+     VALUES ($1, $2, $3)
+     RETURNING *;`,
+    [title, author, published_year],
   );
+
   return result.rows[0];
 }
 
-async function updateBookService(id, title, author) {
+async function updateBookService(id, title, author, published_year) {
   const result = await pool.query(
-    `UPDATE books SET
-          title = COALESCE($1, title),
-          author = COALESCE($2, author)
-      WHERE id = $3
-      RETURNING *;`,
-    [title, author, id],
+    `UPDATE books
+     SET title = COALESCE($1, title),
+         author = COALESCE($2, author),
+         published_year = COALESCE($3, published_year)
+     WHERE id = $4
+     RETURNING *;`,
+    [title, author, published_year, id],
   );
+
   return result.rows[0];
 }
 

@@ -54,9 +54,9 @@ async function getBookById(req, res, next) {
 
 async function createBook(req, res, next) {
   try {
-    const { title, author } = req.body;
+    const { title, author, published_year } = req.body;
 
-    const newBook = await createBookService(title, author);
+    const newBook = await createBookService(title, author, published_year);
 
     return res.status(201).json({
       message: "Book created successfully",
@@ -69,9 +69,14 @@ async function createBook(req, res, next) {
 
 async function updateBook(req, res, next) {
   try {
-    const { title, author } = req.body;
+    const { title, author, published_year } = req.body;
 
-    const updatedBook = await updateBookService(req.bookId, title, author);
+    const updatedBook = await updateBookService(
+      req.bookId,
+      title,
+      author,
+      published_year,
+    );
 
     if (!updatedBook) {
       throw new AppError("Book not found", 404);
